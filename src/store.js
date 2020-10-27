@@ -1,7 +1,8 @@
 import { reactive, toRefs } from 'vue';
 
-const state = reactive({
-    lists: [
+let lists = JSON.parse(window.localStorage.getItem('lists'))
+if (!lists) {
+    lists = [
         {
             name: 'Backlog',
             items: [
@@ -16,11 +17,20 @@ const state = reactive({
             ],
         }
     ]
+}
+
+const state = reactive({
+    lists,
 })
+
+const saveToLocalStorage = () => {
+    window.localStorage.setItem('lists', JSON.stringify(state.lists))
+}
 
 const addItemToList = (item, listName) => {
     let i = state.lists.findIndex(l => l.name === listName)
     state.lists[i].items.push(item)
+    saveToLocalStorage()
 }
 
 export default function store() {
