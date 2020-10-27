@@ -34,10 +34,12 @@ jobs:
           
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.1.2
-      - run: yarn install
-      - run: yarn build
+        run: |
+          yarn install
+          yarn build
 
       - name: Deploy
+      - uses: actions/checkout@v2
         run: |
           cd dist
           git init
