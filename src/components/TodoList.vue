@@ -1,7 +1,7 @@
 <template>
-  <div ref="draggableContainer" class="absolute z-40 border-2 rounded border-gray-300 bg-white"
-       :class="{'border-gray-500 z-50': isDragging}">
-    <div id="draggable-header" @mousedown="dragMouseDown" class="bg-gray-300 h-3 cursor-move"></div>
+  <div ref="draggableContainer" class="absolute z-40 border-2 border-transparent bg-white"
+       :class="{'border-gray-400 z-50': isDragging}">
+    <div id="draggable-header" @mousedown="dragMouseDown" class="bg-gray-400 h-1 cursor-move"></div>
     <div class="p-4">
       <div class="flex justify-between">
         <ListName :list="list" />
