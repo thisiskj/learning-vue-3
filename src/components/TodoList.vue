@@ -1,38 +1,84 @@
 <template>
-  <div>
-    <div class="flex justify-between">
-      <ListName :list="list" />
-      <RemoveList :list="list" />
+  <div ref="draggableContainer" class="absolute z-40 border-2 rounded border-gray-300 bg-white"
+       :class="{'border-gray-500 z-50': isDragging}">
+    <div id="draggable-header" @mousedown="dragMouseDown" class="bg-gray-300 h-3 cursor-move"></div>
+    <div class="p-4">
+      <div class="flex justify-between">
+        <ListName :list="list" />
+        <RemoveList :list="list" />
+      </div>
+      <Item v-for="item in list.items" :key="item.id" :list="list" :item="item" />
+      <AddItem :list="list" />
     </div>
-    <Item class="item" v-for="item in list.items" :key="item.id" :list="list" :item="item" />
-    <input class="ml-6 text-xl focus:outline-none text-gray-400" v-model="input" @keyup.enter="addItem" />
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
 import Item from "@/components/Item";
-import store from "@/store";
 import ListName from "@/components/ListName";
 import RemoveList from "@/components/RemoveList";
+import AddItem from "@/components/AddItem";
+import store from "@/store";
 
 export default {
   name: "TodoList",
-  components: {RemoveList, ListName, Item},
+  components: {AddItem, RemoveList, ListName, Item},
   props: ['list'],
-  setup(props) {
-    let input = ref('')
-
-    const addItem = () => {
-      store().addItemToList(props.list.id, input.value)
-      input.value = ''
-    }
-
+  data: function () {
     return {
-      input,
-      addItem,
-      updateListName: store().updateListName,
+      isDragging: false,
+      positions: {
+        clientX: undefined,
+        clientY: undefined,
+        movementX: 0,
+        movementY: 0
+      }
     }
+  },
+  methods: {
+    dragMouseDown: function (event) {
+      event.preventDefault()
+      this.isDragging = true
+      // get the mouse cursor position at startup:
+      this.positions.clientX = this.clamp(event.clientX)
+      this.positions.clientY = this.clamp(event.clientY)
+      document.onmousemove = this.elementDrag
+      document.onmouseup = this.closeDragElement
+    },
+    elementDrag: function (event) {
+      event.preventDefault()
+      this.positions.movementX = this.positions.clientX - this.clamp(event.clientX)
+      this.positions.movementY = this.positions.clientY - this.clamp(event.clientY)
+      this.positions.clientX = this.clamp(event.clientX)
+      this.positions.clientY = this.clamp(event.clientY)
+      // set the element's new position:
+      this.$refs.draggableContainer.style.top = (this.$refs.draggableContainer.offsetTop - this.positions.movementY) + 'px'
+      this.$refs.draggableContainer.style.left = (this.$refs.draggableContainer.offsetLeft - this.positions.movementX) + 'px'
+
+      console.log(
+          (this.$refs.draggableContainer.offsetTop - this.positions.movementY),
+          (this.$refs.draggableContainer.offsetLeft - this.positions.movementX),
+          this.clamp((this.$refs.draggableContainer.offsetTop - this.positions.movementY)),
+          this.clamp((this.$refs.draggableContainer.offsetLeft - this.positions.movementX)),
+      )
+    },
+    closeDragElement () {
+      this.isDragging = false
+      document.onmouseup = null
+      document.onmousemove = null
+      store().updateList(this.list.id, 'position', {
+        top: this.$refs.draggableContainer.style.top,
+        left: this.$refs.draggableContainer.style.left,
+      })
+    },
+    clamp(n) {
+      let grip = 25
+      return Math.ceil(n / grip) * grip;
+    }
+  },
+  mounted() {
+    this.$refs.draggableContainer.style.top = this.list.position.top
+    this.$refs.draggableContainer.style.left = this.list.position.left
   }
 }
 </script>

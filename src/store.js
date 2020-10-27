@@ -7,6 +7,7 @@ if (!lists) {
         {
             id: uuidv4(),
             name: 'Backlog',
+            position: {top: '0px', left: '0px'},
             items: [
                 { id: uuidv4(), name: 'Clean garage' },
                 { id: uuidv4(), name: 'Install new lights' },
@@ -15,6 +16,7 @@ if (!lists) {
         {
             id: uuidv4(),
             name: 'In Progress',
+            position: {top: '200px', left: '0px'},
             items: [
                 { id: uuidv4(), name: 'Hacktoberfest' },
             ],
@@ -35,10 +37,15 @@ const resetAll = () => {
     window.location.reload()
 }
 
+//
+// Lists
+//
+
 const addList = (listName) => {
     state.lists.push({
         id: uuidv4(),
         name: listName,
+        position: {top: '0px', left: '100px'},
         items: [],
     })
     saveToLocalStorage()
@@ -50,11 +57,15 @@ const removeList = (listId) => {
     saveToLocalStorage()
 }
 
-const updateListName = (listId, listName) => {
+const updateList = (listId, key, value) => {
     let i = state.lists.findIndex(l => l.id === listId)
-    state.lists[i].name = listName
+    state.lists[i][key] = value
     saveToLocalStorage()
 }
+
+//
+// Items
+//
 
 const addItemToList = (listId, itemName) => {
     let i = state.lists.findIndex(l => l.id === listId)
@@ -84,7 +95,7 @@ export default function store() {
         ...toRefs(state),
         addList,
         removeList,
-        updateListName,
+        updateList,
 
         addItemToList,
         removeItem,

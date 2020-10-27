@@ -6,8 +6,8 @@
       <div @click="resetAll" class="text-xs font-light text-center uppercase text-gray-400 hover:text-gray-500 cursor-pointer">reset</div>
     </div>
     <hr class="my-8" />
-    <div class="flex flex-col items-center justify-center">
-      <TodoList v-for="list in lists" :key="list.id" :list="list" class="p-4"/>
+    <div class="relative flex flex-col items-center justify-center">
+      <TodoList v-for="list in lists" :key="list.id" :list="list" />
 
       <div @click="addList('New List')" class="flex items-center justify-center text-gray-500 hover:text-gray-700 cursor-pointer">
         <div class="w-6">
@@ -19,7 +19,6 @@
           Add List
         </div>
       </div>
-
     </div>
   </div>
 </template>

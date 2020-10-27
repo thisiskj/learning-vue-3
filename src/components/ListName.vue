@@ -12,7 +12,7 @@ export default {
   setup(props) {
     let listName = ref(props.list.name)
 
-    watch(listName, (listName) => store().updateListName(props.list.id, listName))
+    watch(listName, (listName) => store().updateList(props.list.id, 'name', listName))
 
     return {
       listName,
